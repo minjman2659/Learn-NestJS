@@ -17,5 +17,13 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
+    // "paths": {
+    //   "@provider/*": ["src/provider/*"],
+    //   "@module/*": ["src/module/*"],
+    //   "@constants/*": ["src/constants/*"],
+    //   "@common/*": ["src/common/*"],
+    //   "@config/*": ["config/*"],
+    //   "@test/*": ["test/*"]
+    // }
   }
 }
