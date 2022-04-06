@@ -1,19 +1,25 @@
-import { HttpExceptionFilter } from './../http-exception.filter';
+// import { HttpExceptionFilter } from './../http-exception.filter';
 import {
   Controller,
   Delete,
   Get,
   HttpException,
+  Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
-  UseFilters,
+  UseInterceptors,
+  // UseFilters,
 } from '@nestjs/common';
+import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
 import { CatsService } from './cats.service';
 
 // Express에서 route와 같은 역할
 @Controller('cats')
-@UseFilters(new HttpExceptionFilter())
+@UseInterceptors(SuccessInterceptor)
+// @UseFilters(new HttpExceptionFilter())
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
@@ -24,8 +30,9 @@ export class CatsController {
   }
 
   @Get(':id')
-  getOneCat() {
-    return 'one cat';
+  getOneCat(@Param('id', ParseIntPipe, PositiveIntPipe) id: number) {
+    console.log(id);
+    return { cat: 'one cat' };
   }
 
   @Post()
