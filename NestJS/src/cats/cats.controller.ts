@@ -1,20 +1,8 @@
-// import { HttpExceptionFilter } from './../http-exception.filter';
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpException,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Put,
-  UseInterceptors,
-  // UseFilters,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { PositiveIntPipe } from 'src/common/pipes/positiveInt.pipe';
 import { CatsService } from './cats.service';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 // Express에서 route와 같은 역할
 @Controller('cats')
@@ -23,35 +11,33 @@ import { CatsService } from './cats.service';
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
-  @Get()
-  getAllCat() {
-    throw new HttpException('api exception', 401);
-    return 'all cats';
+  @ApiOperation({ summary: '고양이 상세 조회' })
+  @Get('/:catId')
+  getCurrentCat() {
+    return 'current cat';
   }
 
-  @Get(':id')
-  getOneCat(@Param('id', ParseIntPipe, PositiveIntPipe) id: number) {
-    console.log(id);
-    return { cat: 'one cat' };
+  @ApiOperation({ summary: '회원가입' })
+  @Post('register')
+  async register(@Body() body: CatRequestDto) {
+    return await this.catsService.register(body);
   }
 
-  @Post()
-  createCat() {
-    return 'create cat';
+  @ApiOperation({ summary: '로그인' })
+  @Post('login')
+  logIn() {
+    return 'login';
   }
 
-  @Put(':id')
-  updateCat() {
-    return 'put cat';
+  @ApiOperation({ summary: '로그아웃' })
+  @Post('logout')
+  logOut() {
+    return 'logout';
   }
 
-  @Patch(':id')
-  updatePartialCat() {
-    return 'patch cat';
-  }
-
-  @Delete(':id')
-  deleteCat() {
-    return 'delete cat';
+  @ApiOperation({ summary: '고양이 사진 업로드' })
+  @Post('upload/cats')
+  uploadCatImg() {
+    return 'uploadImg';
   }
 }
