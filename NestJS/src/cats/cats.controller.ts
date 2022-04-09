@@ -1,10 +1,19 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import { ReadOnlyCatDto } from './dto/cat.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { CatsService } from './cats.service';
 import { CatRequestDto } from './dto/cats.request.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 // Express에서 route와 같은 역할
+@ApiTags('Cats')
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
 // @UseFilters(new HttpExceptionFilter())
@@ -17,10 +26,21 @@ export class CatsController {
     return 'current cat';
   }
 
+  @ApiResponse({
+    status: 409,
+    description: '이미 존재하는 고양이 입니다',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+    type: ReadOnlyCatDto,
+  })
   @ApiOperation({ summary: '회원가입' })
+  @HttpCode(201)
   @Post('register')
   async register(@Body() body: CatRequestDto) {
-    return await this.catsService.register(body);
+    const registeredCat = await this.catsService.register(body);
+    return registeredCat;
   }
 
   @ApiOperation({ summary: '로그인' })
