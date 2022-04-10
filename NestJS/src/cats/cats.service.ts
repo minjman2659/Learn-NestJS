@@ -26,4 +26,8 @@ export class CatsService {
 
     return cat.readOnlyData;
   }
+
+  logout() {
+    return { token: null };
+  }
 }

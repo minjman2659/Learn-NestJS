@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as expressBasicAuth from 'express-basic-auth';
 
 const { PORT, MODE } = process.env;
 if (!PORT || !MODE) {
@@ -13,8 +14,17 @@ const isDev: boolean = MODE === 'dev' ? true : false;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.use(
+    ['/docs'],
+    expressBasicAuth({
+      challenge: true,
+      users: {
+        [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+      },
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('NestJS_Cats_API')

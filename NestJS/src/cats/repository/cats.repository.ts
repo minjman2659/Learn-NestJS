@@ -25,4 +25,22 @@ export class CatsRepository {
       throw new HttpException('DB: create Error', 500);
     }
   }
+
+  async findCatByEmail(email: string): Promise<Cat | null> {
+    try {
+      const cat = await this.catModel.findOne({ email });
+      return cat;
+    } catch (err) {
+      throw new HttpException('DB: findOne Error', 500);
+    }
+  }
+
+  async findCatByIdWithoutPassword(catId: string): Promise<Cat | null> {
+    try {
+      const cat = await this.catModel.findById(catId).select('-password');
+      return cat;
+    } catch (err) {
+      throw new HttpException('DB: findById Error', 500);
+    }
+  }
 }
