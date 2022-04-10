@@ -1,9 +1,11 @@
-import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import * as expressBasicAuth from 'express-basic-auth';
+import * as path from 'path';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/exceptions';
 
 const { PORT, MODE } = process.env;
 if (!PORT || !MODE) {
@@ -13,7 +15,7 @@ if (!PORT || !MODE) {
 const isDev: boolean = MODE === 'dev' ? true : false;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(
@@ -25,6 +27,10 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.useStaticAssets(path.resolve(process.cwd(), './public'), {
+    prefix: '/media',
+  });
 
   const config = new DocumentBuilder()
     .setTitle('NestJS_Cats_API')

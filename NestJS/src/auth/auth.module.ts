@@ -2,9 +2,9 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { CatsModule } from 'src/cats/cats.module';
+import { CatsModule } from 'src/cats';
 import { AuthService } from './auth.service';
-import { JwtStrategy } from './jwt/jwt.strategy';
+import { JwtStrategy } from './jwt';
 
 @Module({
   imports: [

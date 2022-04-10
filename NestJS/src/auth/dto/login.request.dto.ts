@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { Cat } from '../../schema/cats.schema';
+import { Cat } from 'src/schema';
 
 export class LoginRequestDto extends PickType(Cat, [
   'email',

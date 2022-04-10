@@ -1,23 +1,25 @@
-import { CatLoginDto } from './dto/cat.login.dto';
-import { JwtAuthGuard } from './../auth/jwt/jwt.guard';
-import { LoginRequestDto } from './../auth/dto/login.request.dto';
-import { AuthService } from './../auth/auth.service';
-import { ReadOnlyCatDto } from './dto/cat.dto';
 import {
   Body,
   Controller,
   Get,
   HttpCode,
+  Param,
   Post,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { CatsService } from './cats.service';
-import { CatRequestDto } from './dto/cats.request.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CurrentCat } from 'src/common/decorators/cat.decorator';
-import { Cat } from 'src/schema/cats.schema';
+import { AuthService } from 'src/auth';
+import { JwtAuthGuard } from 'src/auth/jwt';
+import { LoginRequestDto } from 'src/auth/dto';
+import { CatsService } from './cats.service';
+import { ReadOnlyCatDto, CatRequestDto, CatLoginDto } from './dto';
+import { SuccessInterceptor } from 'src/common/interceptors';
+import { CurrentCat } from 'src/common/decorators';
+import { multerOptions } from 'src/common/utils';
+import { Cat } from 'src/schema';
 
 // Express에서 route와 같은 역할
 @ApiTags('Cats')
@@ -31,6 +33,18 @@ export class CatsController {
   ) {}
 
   @ApiResponse({
+    status: 200,
+    description: 'OK',
+    type: [ReadOnlyCatDto],
+  })
+  @ApiOperation({ summary: '고양이 리스트 조회' })
+  @HttpCode(200)
+  @Get()
+  getAllCats() {
+    return this.catsService.getAllCats();
+  }
+
+  @ApiResponse({
     status: 401,
     description: '접근 오류',
   })
@@ -42,8 +56,9 @@ export class CatsController {
   @ApiOperation({ summary: '고양이 상세 조회' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Get()
-  getCurrentCat(@CurrentCat() cat: Cat) {
+  @Get('/:catId')
+  getCurrentCat(@Param('catId') catId: string, @CurrentCat() cat: Cat) {
+    console.log(catId);
     return cat.readOnlyData;
   }
 
@@ -91,9 +106,19 @@ export class CatsController {
     return this.catsService.logout();
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+  })
   @ApiOperation({ summary: '고양이 사진 업로드' })
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions()))
+  @UseGuards(JwtAuthGuard)
   @Post('upload/cats')
-  uploadCatImg() {
-    return 'uploadImg';
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentCat() cat: Cat,
+  ) {
+    console.log(files);
+    return this.catsService.uploadImg(cat, files);
   }
 }

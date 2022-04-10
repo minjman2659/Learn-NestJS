@@ -1,8 +1,8 @@
-import { CatRequestDto } from './../dto/cats.request.dto';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Cat } from 'src/schema/cats.schema';
+import { Cat } from 'src/schema';
+import { CatRequestDto } from 'src/cats/dto';
 
 @Injectable()
 export class CatsRepository {
@@ -41,6 +41,26 @@ export class CatsRepository {
       return cat;
     } catch (err) {
       throw new HttpException('DB: findById Error', 500);
+    }
+  }
+
+  async findByIdAndUpdateImg(id: string, fileName: string) {
+    try {
+      const cat = await this.catModel.findById(id);
+      cat.imgUrl = `http://localhost:8080/media/${fileName}`;
+      const newCat = await cat.save();
+      return newCat.readOnlyData;
+    } catch (err) {
+      throw new HttpException('DB: findById or save Error', 500);
+    }
+  }
+
+  async findAllCats() {
+    try {
+      const cats = await this.catModel.find();
+      return cats;
+    } catch (err) {
+      throw new HttpException('DB: find Error', 500);
     }
   }
 }
