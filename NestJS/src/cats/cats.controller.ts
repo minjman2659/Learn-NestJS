@@ -9,17 +9,19 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthService } from 'src/auth';
-import { JwtAuthGuard } from 'src/auth/jwt';
-import { LoginRequestDto } from 'src/auth/dto';
+import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { CatsService } from './cats.service';
-import { ReadOnlyCatDto, CatRequestDto, CatLoginDto } from './dto';
-import { SuccessInterceptor } from 'src/common/interceptors';
-import { CurrentCat } from 'src/common/decorators';
-import { multerOptions } from 'src/common/utils';
-import { Cat } from 'src/schema';
+import { ReadOnlyCatDto } from './dto/cat.dto';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { CatLoginDto } from './dto/cat.login.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthService } from 'src/auth/auth.service';
+import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { CurrentCat } from 'src/common/decorators/cat.decorator';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/common/utils/multer.options';
+import { Cat } from 'src/schema/cats.schema';
 
 // Express에서 route와 같은 역할
 @ApiTags('Cats')

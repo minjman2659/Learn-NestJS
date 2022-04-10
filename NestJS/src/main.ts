@@ -1,11 +1,11 @@
-import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { NestExpressApplication } from '@nestjs/platform-express';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import * as expressBasicAuth from 'express-basic-auth';
 import * as path from 'path';
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/exceptions';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 const { PORT, MODE } = process.env;
 if (!PORT || !MODE) {

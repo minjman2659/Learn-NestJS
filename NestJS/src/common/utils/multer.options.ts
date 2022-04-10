@@ -1,7 +1,7 @@
 import * as multer from 'multer';
 import * as path from 'path';
-import { imagesDir } from './images-dir';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { imagesDir } from './images-dir';
 
 const storage = (): multer.StorageEngine => {
   return multer.diskStorage({

@@ -1,8 +1,8 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CatsRepository } from './repository';
-import { CatRequestDto } from './dto';
-import { Cat } from 'src/schema';
+import { Cat } from 'src/schema/cats.schema';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { CatsRepository } from './repository/cats.repository';
 
 @Injectable()
 export class CatsService {
