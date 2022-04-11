@@ -18,11 +18,9 @@ export class CommentsService {
 
   async getAllComments() {
     try {
-      const comments = await (
-        await this.commentModel.find()
-      ).map(comment => comment.readOnlyData);
-
-      return comments;
+      const comments = await this.commentModel.find();
+      const result = comments.map(comment => comment.readOnlyData);
+      return result;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
@@ -55,7 +53,7 @@ export class CommentsService {
       const newComment = await this.commentModel.create({
         authorId,
         contents,
-        infoId: targetCat.id,
+        catId,
       });
 
       return newComment.readOnlyData;

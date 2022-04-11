@@ -58,14 +58,14 @@ export class Comment extends Document {
   })
   @IsString()
   @IsNotEmpty()
-  infoId: string;
+  catId: string;
 
   readonly readOnlyData: {
     id: string;
     authorId: string;
     contents: string;
     likeCount: number;
-    infoId: string;
+    catId: string;
   };
 }
 
@@ -78,6 +78,6 @@ CommentSchema.virtual('readOnlyData').get(function (this: Comment) {
     authorId: this.authorId,
     contents: this.contents,
     likeCount: this.likeCount,
-    infoId: this.infoId,
+    catId: this.catId,
   };
 });

@@ -1,8 +1,10 @@
+import { CommentSchema } from 'src/schema/comments.schema';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Cat } from 'src/schema/cats.schema';
 import { CatRequestDto } from 'src/cats/dto/cats.request.dto';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class CatsRepository {
@@ -59,7 +61,8 @@ export class CatsRepository {
 
   async findAllCats() {
     try {
-      const cats = await this.catModel.find();
+      const comments = mongoose.model('comments', CommentSchema);
+      const cats = await this.catModel.find().populate('comments', comments);
       return cats;
     } catch (err) {
       throw new InternalServerErrorException(err);

@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Document, SchemaOptions } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Comment } from './comments.schema';
 
 const options: SchemaOptions = {
   timestamps: true,
@@ -62,17 +63,31 @@ export class Cat extends Document {
     email: string;
     name: string;
     imgUrl: string;
+    comments: Comment[];
   };
+
+  readonly comments: Comment[];
 }
 
-export const CatSchema = SchemaFactory.createForClass(Cat);
+const _CatSchema = SchemaFactory.createForClass(Cat);
 
 // 가상으로 존재하는 데이터로, DB에는 저장되지 않으며 클라에게 전달하는 데이터로 활용
-CatSchema.virtual('readOnlyData').get(function (this: Cat) {
+_CatSchema.virtual('readOnlyData').get(function (this: Cat) {
   return {
     id: this.id,
     email: this.email,
     name: this.name,
     imgUrl: this.imgUrl,
+    comments: this.comments,
   };
 });
+
+_CatSchema.virtual('comments', {
+  ref: 'comments',
+  localField: 'id',
+  foreignField: 'catId',
+});
+_CatSchema.set('toObject', { virtuals: true });
+_CatSchema.set('toJSON', { virtuals: true });
+
+export const CatSchema = _CatSchema;
