@@ -1,6 +1,6 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Cat } from 'src/schema/cats.schema';
 import { CatRequestDto } from 'src/cats/dto/cats.request.dto';
 
@@ -13,7 +13,7 @@ export class CatsRepository {
       const result = await this.catModel.exists({ email });
       return result;
     } catch (err) {
-      throw new HttpException('DB: existsByEmail Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 
@@ -22,7 +22,7 @@ export class CatsRepository {
       const newCat = await this.catModel.create(cat);
       return newCat;
     } catch (err) {
-      throw new HttpException('DB: create Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 
@@ -31,27 +31,29 @@ export class CatsRepository {
       const cat = await this.catModel.findOne({ email });
       return cat;
     } catch (err) {
-      throw new HttpException('DB: findOne Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 
-  async findCatByIdWithoutPassword(catId: string): Promise<Cat | null> {
+  async findCatByIdWithoutPassword(
+    catId: string | Types.ObjectId,
+  ): Promise<Cat | null> {
     try {
       const cat = await this.catModel.findById(catId).select('-password');
       return cat;
     } catch (err) {
-      throw new HttpException('DB: findById Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 
-  async findByIdAndUpdateImg(id: string, fileName: string) {
+  async findByIdAndUpdateImg(catId: string | Types.ObjectId, fileName: string) {
     try {
-      const cat = await this.catModel.findById(id);
+      const cat = await this.catModel.findById(catId);
       cat.imgUrl = `http://localhost:8080/media/${fileName}`;
       const newCat = await cat.save();
       return newCat.readOnlyData;
     } catch (err) {
-      throw new HttpException('DB: findById or save Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 
@@ -60,7 +62,7 @@ export class CatsRepository {
       const cats = await this.catModel.find();
       return cats;
     } catch (err) {
-      throw new HttpException('DB: find Error', 500);
+      throw new InternalServerErrorException(err);
     }
   }
 }
