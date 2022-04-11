@@ -8,7 +8,7 @@ export class ReadOnlyCatDto extends PickType(Cat, [
 ] as const) {
   @ApiProperty({
     example: '6251a10a62db5431219e5eb0',
-    description: 'id',
+    description: '고양이 아이디',
     required: true,
   })
   id: string;

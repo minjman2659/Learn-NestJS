@@ -11,7 +11,7 @@ const options: SchemaOptions = {
 export class Cat extends Document {
   @ApiProperty({
     example: 'test@gmail.com',
-    description: 'email',
+    description: '이메일',
     required: true,
   })
   @Prop({
@@ -24,7 +24,7 @@ export class Cat extends Document {
 
   @ApiProperty({
     example: '홍길동',
-    description: 'name',
+    description: '이름',
     required: true,
   })
   @Prop({
@@ -36,7 +36,7 @@ export class Cat extends Document {
 
   @ApiProperty({
     example: 'password1234',
-    description: 'password',
+    description: '비밀번호',
     required: true,
   })
   @Prop({
@@ -48,7 +48,7 @@ export class Cat extends Document {
 
   @ApiProperty({
     example: 'https://image.png',
-    description: 'image url',
+    description: '프로필 이미지 url',
   })
   @Prop({
     default:

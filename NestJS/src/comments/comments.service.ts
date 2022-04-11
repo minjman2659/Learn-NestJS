@@ -18,7 +18,10 @@ export class CommentsService {
 
   async getAllComments() {
     try {
-      const comments = await this.commentModel.find();
+      const comments = await (
+        await this.commentModel.find()
+      ).map(comment => comment.readOnlyData);
+
       return comments;
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -28,7 +31,7 @@ export class CommentsService {
   async createComment(
     catId: string | Types.ObjectId,
     comment: CommentCreateDto,
-    author: string | Types.ObjectId,
+    authorId: string | Types.ObjectId,
   ) {
     try {
       const targetCat = await this.catsRepository.findCatByIdWithoutPassword(
@@ -42,7 +45,7 @@ export class CommentsService {
       const { contents } = comment;
 
       const existedCat = await this.catsRepository.findCatByIdWithoutPassword(
-        author,
+        authorId,
       );
 
       if (!existedCat) {
@@ -50,12 +53,12 @@ export class CommentsService {
       }
 
       const newComment = await this.commentModel.create({
-        author,
+        authorId,
         contents,
-        info: targetCat.id,
+        infoId: targetCat.id,
       });
 
-      return newComment;
+      return newComment.readOnlyData;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
@@ -70,7 +73,8 @@ export class CommentsService {
       }
 
       comment.likeCount++;
-      return await comment.save();
+      const result = await comment.save();
+      return result.readOnlyData;
     } catch (err) {
       throw new InternalServerErrorException(err);
     }

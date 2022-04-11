@@ -11,7 +11,7 @@ const options: SchemaOptions = {
 export class Comment extends Document {
   @ApiProperty({
     example: '6252bf828a7154f072b791d8',
-    description: 'catId',
+    description: '작성자 아이디',
     required: true,
   })
   @Prop({
@@ -21,11 +21,11 @@ export class Comment extends Document {
   })
   @IsString()
   @IsNotEmpty()
-  author: string;
+  authorId: string;
 
   @ApiProperty({
     example: '댓글 내용',
-    description: 'contents',
+    description: '댓글 내용',
     required: true,
   })
   @Prop({
@@ -37,7 +37,7 @@ export class Comment extends Document {
 
   @ApiProperty({
     example: '1',
-    description: 'like count',
+    description: '좋아요 수',
   })
   @Prop({
     default: 0,
@@ -48,7 +48,7 @@ export class Comment extends Document {
 
   @ApiProperty({
     example: '6252c79fc27b4d708c503b52',
-    description: '작성 대상(게시물, 정보글)',
+    description: '작성 대상의 아이디',
     required: true,
   })
   @Prop({
@@ -58,7 +58,26 @@ export class Comment extends Document {
   })
   @IsString()
   @IsNotEmpty()
-  info: string;
+  infoId: string;
+
+  readonly readOnlyData: {
+    id: string;
+    authorId: string;
+    contents: string;
+    likeCount: number;
+    infoId: string;
+  };
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
+
+// 가상으로 존재하는 데이터로, DB에는 저장되지 않으며 클라에게 전달하는 데이터로 활용
+CommentSchema.virtual('readOnlyData').get(function (this: Comment) {
+  return {
+    id: this.id,
+    authorId: this.authorId,
+    contents: this.contents,
+    likeCount: this.likeCount,
+    infoId: this.infoId,
+  };
+});
