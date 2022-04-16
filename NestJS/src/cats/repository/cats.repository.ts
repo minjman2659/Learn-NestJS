@@ -48,10 +48,28 @@ export class CatsRepository {
     }
   }
 
-  async findByIdAndUpdateImg(catId: string | Types.ObjectId, fileName: string) {
+  async findByIdAndUpdateImgInLocal(
+    catId: string | Types.ObjectId,
+    fileName: string,
+  ) {
     try {
       const cat = await this.catModel.findById(catId);
-      cat.imgUrl = `http://localhost:8080/media/${fileName}`;
+      cat.imgUrl = `http://localhost:8080/image/${fileName}`;
+      const newCat = await cat.save();
+      return newCat.readOnlyData;
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+  }
+
+  async findByIdAndUpdateImgInAws(
+    catId: string | Types.ObjectId,
+    key: string,
+    bucketName: string,
+  ) {
+    try {
+      const cat = await this.catModel.findById(catId);
+      cat.imgUrl = `https://${bucketName}.s3.amazonaws.com/${key}`;
       const newCat = await cat.save();
       return newCat.readOnlyData;
     } catch (err) {

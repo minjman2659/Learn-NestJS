@@ -5,6 +5,7 @@ import {
   HttpCode,
   Param,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -19,7 +20,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { CurrentCat } from 'src/common/decorators/cat.decorator';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/common/utils/multer.options';
 import { Cat } from 'src/schema/cats.schema';
 
@@ -111,16 +112,45 @@ export class CatsController {
   @ApiResponse({
     status: 201,
     description: 'Created',
+    type: ReadOnlyCatDto,
   })
-  @ApiOperation({ summary: '고양이 사진 업로드' })
+  @ApiOperation({ summary: '고양이 사진 업로드(로컬)' })
   @UseInterceptors(FilesInterceptor('image', 10, multerOptions()))
   @UseGuards(JwtAuthGuard)
-  @Post('upload/cats')
+  @Post('image/local')
   uploadCatImg(
     @UploadedFiles() files: Array<Express.Multer.File>,
     @CurrentCat() cat: Cat,
   ) {
     console.log(files);
-    return this.catsService.uploadImg(cat, files);
+    return this.catsService.uploadImgInLocal(cat, files);
+  }
+
+  @ApiResponse({
+    status: 201,
+    description: 'Created',
+    type: ReadOnlyCatDto,
+  })
+  @ApiOperation({ summary: '고양이 사진 업로드(AWS))' })
+  @UseGuards(JwtAuthGuard)
+  @Post('image/aws')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadCatImgInAws(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentCat() cat: Cat,
+  ) {
+    console.log(file);
+    return await this.catsService.uploadFileToS3('cats', file, cat);
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'OK',
+  })
+  @ApiOperation({ summary: 'key에 해당하는 이미지 url 조회' })
+  @HttpCode(200)
+  @Post('image') // 파라미터로 전달하기에는 '/'가 존재해서 body로 전달하기 위해 Post 메소드 사용
+  getImgUrl(@Body('key') key: string) {
+    return this.catsService.getAwsS3FileUrl(key);
   }
 }

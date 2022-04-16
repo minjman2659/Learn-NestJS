@@ -9,7 +9,7 @@ import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGODB_URI),
     CatsModule,
     AuthModule,

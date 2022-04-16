@@ -10,9 +10,7 @@ import { Comment, CommentSchema } from 'src/schema/comments.schema';
 
 @Module({
   imports: [
-    MulterModule.register({
-      dest: './public',
-    }),
+    MulterModule.register(),
     MongooseModule.forFeature([
       { name: Cat.name, schema: CatSchema },
       { name: Comment.name, schema: CommentSchema },
