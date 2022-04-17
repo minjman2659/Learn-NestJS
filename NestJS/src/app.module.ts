@@ -19,7 +19,7 @@ import { CommentsModule } from './comments/comments.module';
   providers: [],
 })
 export class AppModule implements NestModule {
-  private readonly isDev: boolean = process.env.MODE === 'dev' ? true : false;
+  private readonly isDev: boolean = process.env.MODE === 'dev';
 
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
