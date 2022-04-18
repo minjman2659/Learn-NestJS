@@ -7,19 +7,54 @@ const helloStrangerElement = getElementById('hello_stranger');
 const chattingBoxElement = getElementById('chatting_box');
 const formElement = getElementById('chat_form');
 
+//* draw functions
+const drawHelloStranger = (username) => {
+  helloStrangerElement.innerText = `Hello ${username}`;
+};
+
+const drawChat = (message) => {
+  const wrapperChatBox = document.createElement('div');
+  const chatBox = `
+    <div>
+     ${message}
+    </div>
+  `;
+  wrapperChatBox.innerHTML = chatBox;
+  chattingBoxElement.append(wrapperChatBox);
+};
+
+//* global socket handler
+socket.on('user_connected', (username) => {
+  drawChat(`${username} Come In!`);
+});
+
+socket.on('new_chat', (data) => {
+  const { message, user } = data;
+  drawChat(`${user}: ${message}`);
+});
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+  const inputValue = event.target.elements[0].value;
+  if (inputValue !== '') {
+    socket.emit('submit_chat', inputValue);
+    drawChat(`me: ${inputValue}`);
+    event.target.elements[0].value = '';
+  }
+};
+
 function helloUser() {
   // socket.on 데이터 이후 socket.emit 의 콜백 함수가 실행됨
   const username = prompt('What is your name?');
-  socket.emit('new_user', username, (resData) => {
-    console.log(resData);
-  });
-  socket.on('hello_user', (data) => {
-    console.log(data);
+  socket.emit('new_user', username, (data) => {
+    drawHelloStranger(data);
   });
 }
 
 function init() {
   helloUser();
+  //* 이벤트 연결
+  formElement.addEventListener('submit', handleSubmit);
 }
 
 init();
