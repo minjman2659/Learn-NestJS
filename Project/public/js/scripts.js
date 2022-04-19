@@ -29,8 +29,12 @@ socket.on('user_connected', (username) => {
 });
 
 socket.on('new_chat', (data) => {
-  const { message, user } = data;
-  drawChat(`${user}: ${message}`);
+  const { chat, username } = data;
+  drawChat(`${username}: ${chat}`);
+});
+
+socket.on('disconnected_user', (username) => {
+  drawChat(`${username} Come Out...`);
 });
 
 const handleSubmit = (event) => {
